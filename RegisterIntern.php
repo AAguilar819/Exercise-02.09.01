@@ -31,11 +31,8 @@
         ++$errors;
         echo "<p>You need to enter an email address.</p>";
     } else {
-        //"/^[\w-]+(\.[\w-]+)*@" . "[\w-]+(\.[\w-]+)*" . "(\.[a-z]{2,})$/i"
-        //"/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,})$/i"
-        //"/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[A-Za-z]){2,}$/i"
         $email = stripslashes($_POST['email']);
-        if (preg_match("/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[A-Za-z]){2,}$/i", $email) == 0) {
+        if (preg_match("/^[\w-]+(\.[\w-])*@[\w-]+(\.[\w-]+)*(\.[A-Za-z]{2,})$/i", $email) == 0) {
             ++$errors;
             echo "<p>You need to enter a valid email address.</p>";
             $email = "";
@@ -67,8 +64,63 @@
             $password2 = "";
         }
     }
+    
+    $hostName = "localhost";
+    $username = "adminer";
+    $passwd = "hurry-leave-06";
+    $DBConnect = false;
+    $DBName = "internships2";
+    
+    if ($errors == 0) {//if no errors, connect to server
+        $DBConnect = mysqli_connect($hostName, $username, $passwd);
+        if (!$DBConnect) {
+            ++$errors;
+            echo "<p>Unable to connect to the database server.  Error code: " . mysqli_connect_error() . ".</p>\n";
+        } else {
+            $result = mysqli_select_db($DBConnect, $DBName);
+            if (!$result) {
+                ++$errors;
+                echo "<p>Unable to select the database \"$DBName\".  Error code: " . mysqli_error($DBConnect) . ".</p>\n";
+            }
+        }
+       
+    }
+    $TableName = "interns";
+    if ($errors == 0) {
+        $SQLstring = "SELECT count(*) FROM $TableName WHERE email='$email'";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        if ($queryResult) {
+            $row = mysqli_fetch_row($queryResult);
+            if ($row[0] > 0) {
+                ++$errors;
+                echo "<p>The E-mail address entered (" . htmlentities($email) . ") is already registered.</p>\n";
+            }
+        }
+    }
+    if ($errors == 0) {
+        $first = stripslashes($_POST['first']);
+        $last = stripslashes($_POST['last']);
+        $SQLstring = "INSERT INTO $TableName (first, last, email, password_md5) VALUES ('$first', '$last', '$email', '" . md5($password) . "')";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        
+        if (!$queryResult) {
+            ++$errors;
+            echo "<p>Unable to save your registration information.  Error code: " . mysqli_error($DBConnect) . ".</p>";
+        } else {
+            $internID = mysqli_insert_id($DBConnect);
+        }
+    }
+    if ($errors == 0) {
+        $internName = $first . " " . $last;
+        echo "<p>Thank you, $internName. ";
+        echo "Your new Intern ID is <strong>$internID</strong>.</p>\n";
+        echo "<p>Closing Database Connection...</p>\n";
+        mysqli_close($DBConnect);
+    }
+    if ($errors > 0) {
+        echo "<p>Please use your browser's BACK button to return to the form and fix the errors indicated.</p>\n";
+    }
     ?>
 </body>
-
 
 </html>
