@@ -23,6 +23,7 @@
 <body>
     <h1>College Internships</h1>
     <h2>Register / Login</h2>
+    <!-- Basic form to ru  the series of webpages -->
     <p>New Interns, please complete the top form to register as a user. Returning users, please complete the second form to login.</p>
 
     <h3>New Intern Registration</h3>
