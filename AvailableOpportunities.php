@@ -136,6 +136,15 @@
             echo "<td>" . htmlentities($opportunity['endDate']) . "</td>\n";
             echo "<td>" . htmlentities($opportunity['position']) . "</td>\n";
             echo "<td>" . htmlentities($opportunity['description']) . "</td>\n";
+            echo "<td>\n";
+            if (in_array($opportunity['opportunityID'], $selectedOpportunities)) {
+                echo "Selected";
+            } else if ($approvedOpportunity) {
+                echo "Open";
+            } else {
+                echo "<a href='RequestOpportunity.php?internID=$internID&opportunityID=" . $opportunity['opportunityID'] . "'>Available</a>";
+            }
+            echo "</td>\n";
             echo "</tr>\n";
         }
     }

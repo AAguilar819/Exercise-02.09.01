@@ -71,10 +71,11 @@
         mysqli_close($DBConnect);
     }
     if ($errors == 0) { // if no errors, set up the form to transfer data and link to a site
-        echo "<form action='AvailableOpportunities.php' method='post'>\n";
-        echo "<input type='hidden' name='internID' value='$internID'>";
-        echo "<input type='submit' name='submit' value='View Available Opportunities'>";
-        echo "</form>\n";
+        // echo "<form action='AvailableOpportunities.php' method='post'>\n";
+        // echo "<input type='hidden' name='internID' value='$internID'>";
+        // echo "<input type='submit' name='submit' value='View Available Opportunities'>";
+        // echo "</form>\n";
+        echo "<p><a href='AvailableOpportunities.php?internID=$internID'>Available Opportunities</a></p>\n";
     }
     if ($errors > 0) { // informs the user to fix errors if any
         echo "<p>Please use your browser's BACK button to return to the form and fix the errors indicated.</p>\n";
