@@ -29,6 +29,11 @@
     } else { // reached without a submit from another page.
         $internID = -1;
     }
+    if (isset($_COOKIE['LastRequestDate'])) {
+        $lastRequestDate = urldecode($_COOKIE['LastRequestDate']);
+    } else {
+        $lastRequestDate = "";
+    }
     
     $errors = 0;
     $hostName = "localhost";
@@ -116,6 +121,9 @@
     if ($DBConnect) {
         echo "<p>Closing Database Connection...</p>\n";
         mysqli_close($DBConnect);
+    }
+    if (!empty($lastRequestDate)) {
+        echo "<p>You last requested an internship opportunity on $lastRequestDate.</p>\n";
     }
     echo "<table border='1' width='100%'>\n";
     echo "<tr>\n";
