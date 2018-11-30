@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!doctype html>
 
 <html>
@@ -27,7 +31,7 @@
     <p>New Interns, please complete the top form to register as a user. Returning users, please complete the second form to login.</p>
 
     <h3>New Intern Registration</h3>
-    <form action="RegisterIntern.php" method="post">
+    <form action="RegisterIntern.php?PHPSESSID=<?php echo session_id(); ?>" method="post">
         <p>
             Enter your name: First
             <input type="text" name="first">
@@ -50,7 +54,7 @@
         <input type="reset" name="reset" value="Reset Registration Form">&nbsp;&nbsp;<input type="submit" name="register" value="Register">
     </form>
     <h3>Returning Intern Login</h3>
-    <form action="VerifyLogin.php" method="post">
+    <form action="VerifyLogin.php?PHPSESSID=<?php echo session_id(); ?>" method="post">
         Enter your e-mail address:
         <input type="text" name="email">
         </p>

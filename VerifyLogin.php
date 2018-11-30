@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!doctype html>
 
 <html>
@@ -59,7 +63,8 @@
                 echo "<p>The e-mail address/password combination entered is not valid.</p>\n";
             } else { // match found, login successful
                 $row = mysqli_fetch_assoc($queryResult);
-                $internID = $row['internID'];
+                // $internID = $row['internID'];
+                $_SESSION['internID'] = $row['internID'];
                 $internName = $row['first'] . " " . $row['last'];
                 mysqli_free_result($queryResult);
                 echo "<p>Welcome back $internName!</p>\n";
@@ -75,7 +80,8 @@
         // echo "<input type='hidden' name='internID' value='$internID'>";
         // echo "<input type='submit' name='submit' value='View Available Opportunities'>";
         // echo "</form>\n";
-        echo "<p><a href='AvailableOpportunities.php?internID=$internID'>Available Opportunities</a></p>\n";
+        // echo "<p><a href='AvailableOpportunities.php?internID=$internID'>Available Opportunities</a></p>\n";
+        echo "<p><a href='AvailableOpportunities.php?PHPSESSID=" . session_id() . "'>Available Opportunities</a></p>\n";
     }
     if ($errors > 0) { // informs the user to fix errors if any
         echo "<p>Please use your browser's BACK button to return to the form and fix the errors indicated.</p>\n";
