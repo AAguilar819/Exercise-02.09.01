@@ -4,7 +4,7 @@
 
 <!--
     
-    Project 02.09.01
+    Project 02.09.05
     
     Author: Abraham Aguilar
     Date: 11.30.18
@@ -24,10 +24,10 @@
     <h1>Professional Conferences</h1>
     <h2>Register / Login</h2>
     <!-- Basic form to run the series of webpages -->
-    <p>New users, please complete the top form to register as a user. Returning users, please complete the second form to login.</p>
+    <p>For those that want to register for this conference, please complete the top form to register. Those wanting to adjust or finish their plans, please complete the second form.</p>
 
     <h3>New User Registration</h3>
-    <form action="RegisterUser" method="post">
+    <form action="RegisterUser.php" method="post">
         <p>
             Enter your name: First
             <input type="text" name="first">
@@ -37,6 +37,10 @@
         <p>
             Enter your e-mail address:
             <input type="text" name="email">
+        </p>
+        <p>
+            Enter your phone number:
+            <input type="text" name="phone">
         </p>
         <p>
             Enter a password for your account:
@@ -50,7 +54,7 @@
         <input type="reset" name="reset" value="Reset Registration Form">&nbsp;&nbsp;<input type="submit" name="register" value="Register">
     </form>
     <h3>Returning User Login</h3>
-    <form action="VerifyLogin.php?PHPSESSID=<?php echo session_id(); ?>" method="post">
+    <form action="VerifyUser.php" method="post">
         Enter your e-mail address:
         <input type="text" name="email">
         </p>

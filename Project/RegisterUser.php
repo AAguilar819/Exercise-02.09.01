@@ -14,6 +14,17 @@ if (empty($_POST['email'])) { // nothing was inserted via email.
         $email = "";
     }
 }
+if (empty($_POST['phone'])) { // nothing was inserted via email.
+    ++$errors;
+    $body .= "<p>You need to enter a phone number.</p>";
+} else {
+    $phone = stripslashes($_POST['phone']);
+    if (preg_match("/^\d{3}-\d{3}-\d{4}$/", $phone) == 0) { // checks if the phone number was properly typed.  calls an error otherwise
+        ++$errors;
+        $body .= "<p>You need to enter a valid phone number.</p>";
+        $phone = "";
+    }
+}
 if (empty($_POST['password'])) { // nothing was inserted for password
     ++$errors;
     $body .= "<p>You need to enter a password.</p>\n";
@@ -45,7 +56,7 @@ $hostName = "localhost";
 $username = "adminer";
 $passwd = "hurry-leave-06";
 $DBConnect = false;
-$DBName = "internships2";
+$DBName = "professionalConferences";
 
 if ($errors == 0) { //if no errors, connect to server
     $DBConnect = mysqli_connect($hostName, $username, $passwd);
@@ -61,7 +72,7 @@ if ($errors == 0) { //if no errors, connect to server
     }
    
 }
-$TableName = "interns";
+$TableName = "users";
 if ($errors == 0) { // if still no errors, check for duplicate email
     $SQLstring = "SELECT count(*) FROM $TableName WHERE email='$email'";
     $queryResult = mysqli_query($DBConnect, $SQLstring);
@@ -76,7 +87,7 @@ if ($errors == 0) { // if still no errors, check for duplicate email
 if ($errors == 0) { // if still no errors, write to the table
     $first = stripslashes($_POST['first']);
     $last = stripslashes($_POST['last']);
-    $SQLstring = "INSERT INTO $TableName (first, last, email, password_md5) VALUES ('$first', '$last', '$email', '" . md5($password) . "')";
+    $SQLstring = "INSERT INTO $TableName (first, last, email, password_md5, phoneNumber) VALUES ('$first', '$last', '$email', '" . md5($password) . "', '$phone')";
     $queryResult = mysqli_query($DBConnect, $SQLstring);
     
     if (!$queryResult) { // failure to write to the table
@@ -88,12 +99,14 @@ if ($errors == 0) { // if still no errors, write to the table
     }
 }
 if ($errors == 0) { // if STILL no errors, save the data for use
-    $internName = $first . " " . $last;
-    $body .= "<p>Thank you, $internName. ";
+    $userName = $first . " " . $last;
+    $body .= "<p>Thank you, $userName. ";
     $body .= "Your new Intern ID is <strong>$userID</strong>.</p>\n";
 }
 if ($DBConnect) { // if connection is open, close it
-    setcookie("userID", $userID);
+    if ($errors == 0) {
+        setcookie("userID", $userID);
+    }
     $body .= "<p>Closing Database Connection...</p>\n";
     mysqli_close($DBConnect);
 }
@@ -102,7 +115,7 @@ if ($errors == 0) { // if no errors, set up the form to transfer data and link t
 //     $body .= "<input type='hidden' name='internID' value='$internID'>";
 //     $body .= "<input type='submit' name='submit' value='View Available Opportunities'>";
 //     $body .= "</form>\n";
-    // $body .= "<p><a href='AvailableOpportunities.php?userID=$userID'>View Available Opportunities</a></p>\n";
+    $body .= "<p><a href='AvailableSeminars.php?userID=$userID'>View Available Seminars</a></p>\n";
 }
 if ($errors > 0) { // informs the user to fix errors if any
     $body .= "<p>Please use your browser's BACK button to return to the form and fix the errors indicated.</p>\n";
@@ -115,10 +128,10 @@ if ($errors > 0) { // informs the user to fix errors if any
 
 <!--
     
-    Exercise 02.09.01
+    Exercise 02.09.05
     
     Author: Abraham Aguilar
-    Date: 11.13.18
+    Date: 11.30.18
     
     RegisterIntern.php
     
