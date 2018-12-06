@@ -40,7 +40,7 @@
         </p>
         <p>
             Enter your phone number:
-            <input type="text" name="phone">
+            <input type="text" name="phone" placeholder="nnn-nnn-nnnn">
         </p>
         <p>
             Enter a password for your account:

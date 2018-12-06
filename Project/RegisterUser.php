@@ -2,6 +2,7 @@
 $body = "";
 $errors = 0;
 $email = "";
+$phone = "";
 
 if (empty($_POST['email'])) { // nothing was inserted via email.
     ++$errors;
@@ -94,14 +95,13 @@ if ($errors == 0) { // if still no errors, write to the table
         ++$errors;
         $body .= "<p>Unable to save your registration information.  Error code: " . mysqli_error($DBConnect) . ".</p>";
     } else {
-        // $internID = mysqli_insert_id($DBConnect);
         $userID = mysqli_insert_id($DBConnect);
     }
 }
 if ($errors == 0) { // if STILL no errors, save the data for use
     $userName = $first . " " . $last;
     $body .= "<p>Thank you, $userName. ";
-    $body .= "Your new Intern ID is <strong>$userID</strong>.</p>\n";
+    $body .= "Your new User ID is <strong>$userID</strong>.</p>\n";
 }
 if ($DBConnect) { // if connection is open, close it
     if ($errors == 0) {
@@ -111,11 +111,7 @@ if ($DBConnect) { // if connection is open, close it
     mysqli_close($DBConnect);
 }
 if ($errors == 0) { // if no errors, set up the form to transfer data and link to a site
-//     $body .= "<form action='AvailableOpportunities.php' method='post'>\n";
-//     $body .= "<input type='hidden' name='internID' value='$internID'>";
-//     $body .= "<input type='submit' name='submit' value='View Available Opportunities'>";
-//     $body .= "</form>\n";
-    $body .= "<p><a href='AvailableSeminars.php?userID=$userID'>View Available Seminars</a></p>\n";
+    // $body .= "<p><a href='AvailableSeminars.php?userID=$userID'>View Available Seminars</a></p>\n";
 }
 if ($errors > 0) { // informs the user to fix errors if any
     $body .= "<p>Please use your browser's BACK button to return to the form and fix the errors indicated.</p>\n";
@@ -149,7 +145,32 @@ if ($errors > 0) { // informs the user to fix errors if any
     <h2>User Registration</h2>
     <?php
     echo $body;
+    
+    if ($errors == 0) {
+        // display company form if previous info has no errors
     ?>
+    <p>Before seminars can be chosen, your company must be registrated. Please fill out the following fields:</p>
+
+    <form action="RegisterCompany.php" method="post">
+        <p>
+            Enter your Company name:
+            <input type="text" name="compName">
+        </p>
+        <p>
+            Enter your Company's e-mail address:
+            <input type="text" name="compEmail">
+        </p>
+        <p>
+            Enter your Company's phone number:
+            <input type="text" name="compPhone" placeholder="nnn-nnn-nnnn">
+        </p>
+        <p>
+            Enter your Company's Address:
+            <input type="text" name="compAddr">
+        </p>
+        <input type="reset" name="reset" value="Reset Registration Form">&nbsp;&nbsp;<input type="submit" name="register" value="Register Company">
+    </form>
+    <?php } ?>
 </body>
 
 </html>
