@@ -88,7 +88,7 @@ if ($errors == 0) { // if still no errors, check for duplicate email
 if ($errors == 0) { // if still no errors, write to the table
     $first = stripslashes($_POST['first']);
     $last = stripslashes($_POST['last']);
-    $SQLstring = "INSERT INTO $TableName (first, last, email, password_md5, phoneNumber) VALUES ('$first', '$last', '$email', '" . md5($password) . "', '$phone')";
+    $SQLstring = "INSERT INTO $TableName (first, last, email, password_md5, phoneNumber, registered) VALUES ('$first', '$last', '$email', '" . md5($password) . "', '$phone', 'false')";
     $queryResult = mysqli_query($DBConnect, $SQLstring);
     
     if (!$queryResult) { // failure to write to the table
@@ -124,12 +124,12 @@ if ($errors > 0) { // informs the user to fix errors if any
 
 <!--
     
-    Exercise 02.09.05
+    Project 02.09.05
     
     Author: Abraham Aguilar
-    Date: 11.30.18
+    Date: 12.04.18
     
-    RegisterIntern.php
+    RegisterUser.php
     
 -->
 

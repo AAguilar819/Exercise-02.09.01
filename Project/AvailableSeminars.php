@@ -24,16 +24,10 @@
     <h1>College Internship</h1>
     <h2>Available Opportunities</h2>
     <?php
-    // if (isset($_REQUEST['internID'])) { // carries intern ID from other pages.
-    //     $internID = $_REQUEST['internID'];
-    // } else { // reached without a submit from another page.
-    //     $internID = -1;
-    // }
-    echo "internID: " . $_SESSION['internID'];
-    if (isset($_COOKIE['LastRequestDate'])) {
-        $lastRequestDate = urldecode($_COOKIE['LastRequestDate']);
-    } else {
-        $lastRequestDate = "";
+    if (isset($_REQUEST['internID'])) { // carries intern ID from other pages.
+        $internID = $_REQUEST['internID'];
+    } else { // reached without a submit from another page.
+        $internID = -1;
     }
     
     $errors = 0;
@@ -41,7 +35,7 @@
     $username = "adminer";
     $passwd = "hurry-leave-06";
     $DBConnect = false;
-    $DBName = "internships2";
+    $DBName = "professionalConferences";
     
     if ($errors == 0) { // connects to database if no errors.
         $DBConnect = mysqli_connect($hostName, $username, $passwd);
@@ -56,9 +50,9 @@
             }
         }
     }
-    $TableName = "interns";
+    $TableName = "users";
     if ($errors == 0) { // checks for if the user is registerred.
-        $SQLstring = "SELECT * FROM $TableName WHERE internID='" . $_SESSION['internID'] . "'";
+        $SQLstring = "SELECT * FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (!$queryResult) {
             ++$errors;
@@ -66,55 +60,55 @@
         } else {
             if (mysqli_num_rows($queryResult) == 0) {
                 ++$errors;
-                echo "<p>Invalid Intern ID.</p>\n";
+                echo "<p>Invalid User ID.</p>\n";
             }
         }
     }
     if ($errors == 0) { // sets the user's name for user benefits.
         $row = mysqli_fetch_assoc($queryResult);
-        $internName = $row['first'] . " " . $row['last'];
+        $userName = $row['first'] . " " . $row['last'];
     } else { // page was entered without an internID.
-        $internName = "";
+        $userName = "";
     }
     
-    $TableName = "assigned_opportunities";
+    $TableName = "selected_seminars";
     if ($errors == 0) { // checks for if there is any approved opportunities.
-        $SQLstring = "SELECT count(opportunityID) FROM $TableName WHERE internID='" . $_SESSION['internID'] . "' AND dateApproved IS NOT NULL";
+        $SQLstring = "SELECT count(seminarID) FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "' AND dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) { // there is an approved opportunity.
             $row = mysqli_fetch_row($queryResult);
-            $approvedOpportunity = $row[0];
+            $approvedSeminar = $row[0];
             mysqli_free_result($queryResult);
         }
     }
     if ($errors == 0) {
-        $selectedOpportunities = array(); // stores all opportunities selected by the user.
-        $SQLstring = "SELECT opportunityID FROM $TableName WHERE internID='" . $_SESSION['internID'] . "'";
+        $selectedSeminars = array(); // stores all opportunities selected by the user.
+        $SQLstring = "SELECT seminarID FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
             while (($row = mysqli_fetch_row($queryResult)) != false) { // transfers the opportunities to the array.
-                $selectedOpportunities[] = $row[0];
+                $selectedSeminars[] = $row[0];
             }
             mysqli_free_result($queryResult);
         }
-        $assignedOpportunities = array(); // stores all opportunities selected by the user.
-        $SQLstring = "SELECT opportunityID FROM $TableName WHERE dateApproved IS NOT NULL";
+        $assignedSeminars = array(); // stores all opportunities selected by the user.
+        $SQLstring = "SELECT seminarID FROM $TableName WHERE dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
             while (($row = mysqli_fetch_row($queryResult)) != false) { // transfers the opportunities to the array.
-                $assignedOpportunities[] = $row[0];
+                $assignedSeminars[] = $row[0];
             }
             mysqli_free_result($queryResult);
         }
     }
-    $TableName = "opportunities";
-    $opportunities = array(); // stores all opportunities.
+    $TableName = "seminars";
+    $seminars = array(); // stores all opportunities.
     if ($errors == 0) {
-        $SQLstring = "SELECT opportunityID, company, city, startDate, endDate, position, description FROM $TableName";
+        $SQLstring = "SELECT seminarID, topic, roomNumber, startTime, endTime, description FROM $TableName";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
             while (($row = mysqli_fetch_assoc($queryResult)) != false) { // transfers the opportunities to the array.
-                $opportunities[] = $row;
+                $seminars[] = $row;
             }
         }
 
@@ -128,37 +122,35 @@
     }
     echo "<table border='1' width='100%'>\n";
     echo "<tr>\n";
-    echo "<th style='background-color: cyan;'>Company</th>\n";
-    echo "<th style='background-color: cyan;'>City</th>\n";
-    echo "<th style='background-color: cyan;'>Start Date</th>\n";
-    echo "<th style='background-color: cyan;'>End Date</th>\n";
-    echo "<th style='background-color: cyan;'>Position</th>\n";
+    echo "<th style='background-color: cyan;'>Topic</th>\n";
+    echo "<th style='background-color: cyan;'>Room Number</th>\n";
+    echo "<th style='background-color: cyan;'>Start Time</th>\n";
+    echo "<th style='background-color: cyan;'>End Time</th>\n";
     echo "<th style='background-color: cyan;'>Description</th>\n";
     echo "<th style='background-color: cyan;'>Status</th>\n";
     echo "</tr>\n";
-    foreach ($opportunities as $opportunity) {
-        if (!in_array($opportunity['opportunityID'], $assignedOpportunities)) {
+    foreach ($seminars as $seminar) {
+        if (!in_array($seminar['seminarID'], $assignedSeminar)) {
             echo "<tr>\n";
-            echo "<td>" . htmlentities($opportunity['company']) . "</td>\n";
-            echo "<td>" . htmlentities($opportunity['city']) . "</td>\n";
-            echo "<td>" . htmlentities($opportunity['startDate']) . "</td>\n";
-            echo "<td>" . htmlentities($opportunity['endDate']) . "</td>\n";
-            echo "<td>" . htmlentities($opportunity['position']) . "</td>\n";
-            echo "<td>" . htmlentities($opportunity['description']) . "</td>\n";
+            echo "<td>" . htmlentities($seminar['topic']) . "</td>\n";
+            echo "<td>" . htmlentities($seminar['roomNumber']) . "</td>\n";
+            echo "<td>" . htmlentities($seminar['startTime']) . "</td>\n";
+            echo "<td>" . htmlentities($seminar['endTime']) . "</td>\n";
+            echo "<td>" . htmlentities($seminar['description']) . "</td>\n";
             echo "<td>\n";
-            if (in_array($opportunity['opportunityID'], $selectedOpportunities)) {
+            if (in_array($seminar['seminarID'], $selectedSeminars)) {
                 echo "Selected";
-            } else if ($approvedOpportunity) {
+            } else if ($approvedSeminar) {
                 echo "Open";
             } else {
-                echo "<a href='RequestOpportunity.php?PHPSESSID=" . session_id() . "&opportunityID=" . $opportunity['opportunityID'] . "'>Available</a>";
+                echo "dummy";
             }
             echo "</td>\n";
             echo "</tr>\n";
         }
     }
     echo "</table>\n";
-    echo "<p><a href='InternLogin.php'>Log Out</a></p>\n";
+    echo "<p><a href='ConferenceLogin.php'>Log Out</a></p>\n";
     ?>
 </body>
 
