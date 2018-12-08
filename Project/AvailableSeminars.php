@@ -24,10 +24,10 @@
     <h1>College Internship</h1>
     <h2>Available Opportunities</h2>
     <?php
-    if (isset($_REQUEST['internID'])) { // carries intern ID from other pages.
-        $internID = $_REQUEST['internID'];
+    if (isset($_REQUEST['userID'])) { // carries intern ID from other pages.
+        $userID = $_REQUEST['userID'];
     } else { // reached without a submit from another page.
-        $internID = -1;
+        $userID = -1;
     }
     
     $errors = 0;
@@ -52,7 +52,7 @@
     }
     $TableName = "users";
     if ($errors == 0) { // checks for if the user is registerred.
-        $SQLstring = "SELECT * FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "'";
+        $SQLstring = "SELECT * FROM $TableName WHERE userID='$userID'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (!$queryResult) {
             ++$errors;
@@ -73,7 +73,7 @@
     
     $TableName = "selected_seminars";
     if ($errors == 0) { // checks for if there is any approved opportunities.
-        $SQLstring = "SELECT count(seminarID) FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "' AND dateApproved IS NOT NULL";
+        $SQLstring = "SELECT count(seminarID) FROM $TableName WHERE userID='$userID' AND dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) { // there is an approved opportunity.
             $row = mysqli_fetch_row($queryResult);
@@ -83,7 +83,7 @@
     }
     if ($errors == 0) {
         $selectedSeminars = array(); // stores all opportunities selected by the user.
-        $SQLstring = "SELECT seminarID FROM $TableName WHERE userID='" . $_REQUEST['userID'] . "'";
+        $SQLstring = "SELECT seminarID FROM $TableName WHERE userID='$userID'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
             while (($row = mysqli_fetch_row($queryResult)) != false) { // transfers the opportunities to the array.
@@ -120,6 +120,8 @@
     if (!empty($lastRequestDate)) {
         echo "<p>You last requested an internship opportunity on $lastRequestDate.</p>\n";
     }
+    echo "<form action='SelectSeminars.php' method='post'>\n";
+    echo "<input type='hidden' name='userID' value='$userID'>";
     echo "<table border='1' width='100%'>\n";
     echo "<tr>\n";
     echo "<th style='background-color: cyan;'>Topic</th>\n";
@@ -130,7 +132,7 @@
     echo "<th style='background-color: cyan;'>Status</th>\n";
     echo "</tr>\n";
     foreach ($seminars as $seminar) {
-        if (!in_array($seminar['seminarID'], $assignedSeminar)) {
+        if (!in_array($seminar['seminarID'], $assignedSeminars)) {
             echo "<tr>\n";
             echo "<td>" . htmlentities($seminar['topic']) . "</td>\n";
             echo "<td>" . htmlentities($seminar['roomNumber']) . "</td>\n";
@@ -143,14 +145,16 @@
             } else if ($approvedSeminar) {
                 echo "Open";
             } else {
-                echo "dummy";
+                echo "<p><input type='checkbox' name='" . $seminar['seminarID'] . "'> Click to select</p>";
             }
             echo "</td>\n";
             echo "</tr>\n";
         }
     }
     echo "</table>\n";
-    echo "<p><a href='ConferenceLogin.php'>Log Out</a></p>\n";
+    echo "<p><input type='submit' name='submit' value='Confirm'> (Choices can be re-done later)</p>\n";
+    echo "</form>\n";
+    echo "<p><a href='ConferenceLogin.php'>Log Out</a> (Selections will not be saved)</p>\n";
     ?>
 </body>
 
