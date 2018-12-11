@@ -13,17 +13,26 @@ if (!isset($_POST['submit'])) {
 }
 if ($errors == 0) {
     $seminarIDS = array();
-   foreach ($_POST as $name => $value) {
-       if (!in_array(1 || 2 || 3 || 4, $seminarIDS)) {
-           if (!in_array(6 || 7 || 8 || 9 , $seminarIDS)) {
-               if (!in_array(11 || 12 || 13 || 14, $seminarIDS)) {
-                   $seminarIDS[] = $name;
-               }
-           }
-       }
+   // foreach ($_POST as $name => $value) {
+   //     if (in_array(1 || 2 || 3 || 4, $seminarIDS)) {
+   //         if (in_array(6 || 7 || 8 || 9 , $seminarIDS)) {
+   //             if (in_array(11 || 12 || 13 || 14, $seminarIDS)) {
+   //                 $seminarIDS[] = $name;
+   //             }
+   //         }
+   //     }
+   // }
+    foreach ($_POST as $name => $value) {
+        $seminarIDS[] = $name;
    }
+    echo "<pre>";
+    print_r($seminarIDS);
+    echo "</pre>";
     array_pop($seminarIDS);
     array_shift($seminarIDS);
+    echo "<pre>";
+    print_r($seminarIDS);
+    echo "</pre>";
     if (count($seminarIDS) == 0) {
         ++$errors;
         $body .= "<p>You have not selected a seminar.  Please return to the <a href='AvailableSeminars.php?userID=" . $_POST['userID'] . "'>Seminars Page</a>.</p>\n";
@@ -75,7 +84,7 @@ if ($DBConnect) { // if connection is open, close it
 //}
 if ($errors == 0) {
     $body .= "Setting cookie<br>";
-    setcookie("LastUpdateDate", urlencode($displayDate), time()+60*60*24*7);
+    //setcookie("LastUpdateDate", urlencode($displayDate), time()+60*60*24*7);
 }
 ?>
 <!doctype html>
@@ -106,11 +115,11 @@ if ($errors == 0) {
     <?php
     echo "<pre>";
     print_r($_POST);
-    echo "<pre>";
+    echo "</pre>";
     echo $body;
     echo "<pre>";
     print_r($seminarIDS);
-    echo "<pre>";
+    echo "</pre>";
     ?>
 </body>
 
