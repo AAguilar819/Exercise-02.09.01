@@ -1,44 +1,41 @@
 <?php
-$body = "";
 $errors = 0;
 $internID = 0;
 
 if (!isset($_POST['submit'])) {
     ++$errors;
-    $body .= "<p>You have not logged in or registered.  Please return to the <a href='InternLogin.php'>" . 
+    echo "<p>You have not logged in or registered.  Please return to the <a href='InternLogin.php'>" . 
         "Registration / Login Page</a>.</p>\n";
 } else {
     $userID = $_POST['userID'];
     $_POST['userID'] = null;
 }
 if ($errors == 0) {
-    $seminarIDS = array();
-   // foreach ($_POST as $name => $value) {
-   //     if (in_array(1 || 2 || 3 || 4, $seminarIDS)) {
-   //         if (in_array(6 || 7 || 8 || 9 , $seminarIDS)) {
-   //             if (in_array(11 || 12 || 13 || 14, $seminarIDS)) {
-   //                 $seminarIDS[] = $name;
-   //             }
-   //         }
-   //     }
-   // }
+    $IDS = array();
     foreach ($_POST as $name => $value) {
-        $seminarIDS[] = $name;
-   }
+        $IDS[] = $name;
+    }
+    $string = implode(" ", $IDS);
+    echo $string;
+    $seminarIDS = array();
+    if (preg_match("/([1-5]\D){1}/", $string, $matches)) {
+        $seminarIDS[] = $matches[0];
+    }
+    if (preg_match("/([6-9]|10){1}/", $string, $matches)) {
+        $seminarIDS[] = $matches[0];
+    }
+    if (preg_match("/(1[1-5]){1}/", $string, $matches)) {
+        $seminarIDS[] = $matches[0];
+    }
     echo "<pre>";
     print_r($seminarIDS);
     echo "</pre>";
-    array_pop($seminarIDS);
-    array_shift($seminarIDS);
-    echo "<pre>";
-    print_r($seminarIDS);
-    echo "</pre>";
-    if (count($seminarIDS) == 0) {
+    if (count($IDS) == 0) {
         ++$errors;
-        $body .= "<p>You have not selected a seminar.  Please return to the <a href='AvailableSeminars.php?userID=" . $_POST['userID'] . "'>Seminars Page</a>.</p>\n";
+        echo "<p>You have not selected a seminar.  Please return to the <a href='AvailableSeminars.php?userID=" . $_POST['userID'] . "'>Seminars Page</a>.</p>\n";
     }
 }
-$errors = 1;
+
 $hostName = "localhost";
 $username = "adminer";
 $passwd = "hurry-leave-06";
@@ -49,32 +46,38 @@ if ($errors == 0){
     $DBConnect = mysqli_connect($hostName, $username, $passwd);
     if (!$DBConnect) {
         ++$errors;
-        $body .= "<p>Unable to connect to the database server.  Error code: " . mysqli_connect_error() . ".</p>\n";
+        echo "<p>Unable to connect to the database server.  Error code: " . mysqli_connect_error() . ".</p>\n";
     } else {
         $result = mysqli_select_db($DBConnect, $DBName);
         if (!$result) {
             ++$errors;
-            $body .= "<p>Unable to select the database \"$DBName\".  Error code: " . mysqli_error($DBConnect) . ".</p>\n";
+            echo "<p>Unable to select the database \"$DBName\".  Error code: " . mysqli_error($DBConnect) . ".</p>\n";
         }
     }
 }
 $displayDate = date("l, F j, Y, g:i A");
-$body .= "\$displayDate: $displayDate<br>";
+echo "\$displayDate: $displayDate<br>";
 $dbDate = date("Y-m-d H:i:s");
-$body .= "\$dbDate: $dbDate<br>";
+echo "\$dbDate: $dbDate<br>";
+$errors = 1;
+
 if ($errors == 0) {
     $TableName = "selected_seminars";
-    $SQLstring = "INSERT INTO $TableName (opportunityID, internID, dateSelected) VALUES($opportunityID, " . $_POST['userID'] . ", '$dbDate')";
-    $queryResult = mysqli_query($DBConnect, $SQLstring);
-    if (!$queryResult) {
-        ++$errors;
-        $body .= "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
-    } else {
-        $body .= "<p>Your results for opportunity #$opportunityID have been entered on $displayDate.</p>\n";
+    for ($i = 0; $i < count($seminarIDS); $i++) {
+        $SQLstring = "INSERT INTO $TableName (seminarID, internID, dateSelected) VALUES($seminarIDS[$i], " . $userID . ", '$dbDate')";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        if (!$queryResult) {
+            ++$errors;
+            echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
+            break;
+        }
+    }
+    if ($errors == 0) {
+        echo "<p>Your results choices have been updated on $displayDate.</p>\n";
     }
 }
 if ($DBConnect) { // if connection is open, close it
-    $body .= "<p>Closing Database Connection...</p>\n";
+    echo "<p>Closing Database Connection...</p>\n";
     mysqli_close($DBConnect);
 }
 //if ($_POST['userID'] > 0) {
@@ -83,7 +86,7 @@ if ($DBConnect) { // if connection is open, close it
 //    $body .= "<p>Please <a href='InternLogin.php'>Register or Log In</a> to use this page.</p>";
 //}
 if ($errors == 0) {
-    $body .= "Setting cookie<br>";
+    echo "Setting cookie<br>";
     //setcookie("LastUpdateDate", urlencode($displayDate), time()+60*60*24*7);
 }
 ?>
@@ -114,11 +117,7 @@ if ($errors == 0) {
     <h2>Seminars Saved</h2>
     <?php
     echo "<pre>";
-    print_r($_POST);
-    echo "</pre>";
-    echo $body;
-    echo "<pre>";
-    print_r($seminarIDS);
+    print_r($IDS);
     echo "</pre>";
     ?>
 </body>

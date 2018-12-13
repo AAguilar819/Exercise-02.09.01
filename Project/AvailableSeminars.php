@@ -117,9 +117,7 @@
         echo "<p>Closing Database Connection...</p>\n";
         mysqli_close($DBConnect);
     }
-    if (!empty($lastRequestDate)) {
-        echo "<p>You last requested an internship opportunity on $lastRequestDate.</p>\n";
-    }
+    echo "<p>If more than 1 is chosen within a set, then the highest one will be saved.</p>\n";
     echo "<form action='SelectSeminars.php' method='post'>\n";
     echo "<input type='hidden' name='userID' value='$userID'>";
     echo "<table border='1' width='100%'>\n";
