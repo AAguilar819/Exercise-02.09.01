@@ -139,7 +139,7 @@
             echo "<td>" . htmlentities($seminar['description']) . "</td>\n";
             echo "<td>\n";
             if (in_array($seminar['seminarID'], $selectedSeminars)) {
-                echo "Selected";
+                echo "<p><input type='checkbox' name='" . $seminar['seminarID'] . "'> Click to select (Selected)</p>";
             } else if ($approvedSeminar) {
                 echo "Open";
             } else {

@@ -59,17 +59,24 @@ $displayDate = date("l, F j, Y, g:i A");
 echo "\$displayDate: $displayDate<br>";
 $dbDate = date("Y-m-d H:i:s");
 echo "\$dbDate: $dbDate<br>";
-$errors = 1;
+//$errors = 1;
 
 if ($errors == 0) {
     $TableName = "selected_seminars";
-    for ($i = 0; $i < count($seminarIDS); $i++) {
-        $SQLstring = "INSERT INTO $TableName (seminarID, internID, dateSelected) VALUES($seminarIDS[$i], " . $userID . ", '$dbDate')";
-        $queryResult = mysqli_query($DBConnect, $SQLstring);
-        if (!$queryResult) {
-            ++$errors;
-            echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
-            break;
+    $SQLstring = "DELETE FROM $TableName WHERE userID='$userID'";
+    $queryResult = mysqli_query($DBConnect, $SQLstring);
+    if (!$queryResult) {
+        ++$errors;
+        echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
+    } else {
+        for ($i = 0; $i < count($seminarIDS); $i++) {
+            $SQLstring = "INSERT INTO $TableName (seminarID, userID, dateSelected) VALUES($seminarIDS[$i], " . $userID . ", '$dbDate')";
+            $queryResult = mysqli_query($DBConnect, $SQLstring);
+            if (!$queryResult) {
+                ++$errors;
+                echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
+                break;
+            }
         }
     }
     if ($errors == 0) {
@@ -86,7 +93,7 @@ if ($DBConnect) { // if connection is open, close it
 //    $body .= "<p>Please <a href='InternLogin.php'>Register or Log In</a> to use this page.</p>";
 //}
 if ($errors == 0) {
-    echo "Setting cookie<br>";
+    //echo "Setting cookie<br>";
     //setcookie("LastUpdateDate", urlencode($displayDate), time()+60*60*24*7);
 }
 ?>

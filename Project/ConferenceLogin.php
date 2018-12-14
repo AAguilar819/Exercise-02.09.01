@@ -55,8 +55,13 @@
     </form>
     <h3>Returning User Login</h3>
     <form action="VerifyUser.php" method="post">
-        Enter your e-mail address:
-        <input type="text" name="email">
+        <p>
+            Enter your e-mail address:
+            <input type="text" name="email">
+        </p>
+        <p>
+            Enter your Company:
+            <input type="text" name="company">
         </p>
         <p>
             Enter your password:
