@@ -60,10 +60,6 @@
             <input type="text" name="email">
         </p>
         <p>
-            Enter your Company:
-            <input type="text" name="company">
-        </p>
-        <p>
             Enter your password:
             <input type="password" name="password">
         </p>

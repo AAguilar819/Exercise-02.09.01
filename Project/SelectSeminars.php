@@ -69,13 +69,23 @@ if ($errors == 0) {
         ++$errors;
         echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
     } else {
-        for ($i = 0; $i < count($seminarIDS); $i++) {
-            $SQLstring = "INSERT INTO $TableName (seminarID, userID, dateSelected) VALUES($seminarIDS[$i], " . $userID . ", '$dbDate')";
-            $queryResult = mysqli_query($DBConnect, $SQLstring);
-            if (!$queryResult) {
-                ++$errors;
-                echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
-                break;
+        $TableName = "users";
+        $SQLstring = "SELECT compName FROM $TableName WHERE userID='$userID'";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        if (!$queryResult) {
+            ++$errors;
+            echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
+        } else {
+            $row = mysqli_fetch_assoc($queryResult);
+            $TableName = "selected_seminars";
+            for ($i = 0; $i < count($seminarIDS); $i++) {
+                $SQLstring = "INSERT INTO $TableName (seminarID, userID, dateSelected, company) VALUES($seminarIDS[$i], '$userID', '$dbDate'," . "'" . $row['compName'] . "')";
+                $queryResult = mysqli_query($DBConnect, $SQLstring);
+                if (!$queryResult) {
+                    ++$errors;
+                    echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . ".</p>\n";
+                    break;
+                }
             }
         }
     }
